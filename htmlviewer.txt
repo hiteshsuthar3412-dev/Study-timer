@@ -1,0 +1,52 @@
+<!DOCTYPE html><html><head><title>Study Timer</title><style>body{font-family:Arial;text-align:center;margin-top:50px}input{width:60px}button{margin:5px}h1{font-size:3em}</style></head><body><h2>📚 Study Timer</h2><p>Study (minutes): <input type="number" id="studyMins" value="25"><p>Break (minutes): <input type="number" id="breakMins" value="5"></p><h1 id="timer">00:00</h1><h3 id="status">Ready</h3><button onclick="startStudy()">Start Study</button><button id="pauseBtn" onclick="pauseResume()" disabled="disabled">Pause</button><p>Sessions completed today:<span id="sessions">0</span></p><script>let timerDisplay = document.getElementById("timer");
+        let statusDisplay = document.getElementById("status");
+        let sessionCount = document.getElementById("sessions");
+        let pauseBtn = document.getElementById("pauseBtn");
+
+        let timer, timeLeft, isStudy = true, paused = false;
+
+        function startStudy() {
+            isStudy = true;
+            timeLeft = document.getElementById("studyMins").value * 60;
+            statusDisplay.textContent = "Studying...";
+            pauseBtn.disabled = false;
+            paused = false;
+            pauseBtn.textContent = "Pause";
+            runTimer();
+        }
+
+        function startBreak() {
+            isStudy = false;
+            timeLeft = document.getElementById("breakMins").value * 60;
+            statusDisplay.textContent = "Break Time!";
+            paused = false;
+            pauseBtn.textContent = "Pause";
+            runTimer();
+        }
+
+        function runTimer() {
+            clearInterval(timer);
+            timer = setInterval(() => {
+                if (!paused) {
+                    let mins = Math.floor(timeLeft / 60);
+                    let secs = timeLeft % 60;
+                    timerDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                    if (timeLeft <= 0) {
+                        clearInterval(timer);
+                        if (isStudy) {
+                            sessionCount.textContent = parseInt(sessionCount.textContent) + 1;
+                            startBreak();
+                        } else {
+                            statusDisplay.textContent = "Break Over! Ready for next study.";
+                            pauseBtn.disabled = true;
+                        }
+                    }
+                    timeLeft--;
+                }
+            }, 1000);
+        }
+
+        function pauseResume() {
+            paused = !paused;
+            pauseBtn.textContent = paused ? "Resume" : "Pause";
+        }</script></body></html>
